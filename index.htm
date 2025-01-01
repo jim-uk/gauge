@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gauge</title>
+
+    <script src ="/gauge.js"></script>
+</head>
+<body>
+    <div id="guage" style="width: 300px; height: 150px;"></div>
+    <div id="fire" style="width: 300px; height: 150px;"></div>
+    <div id="rose" style="width: 400px; height: 400px;"></div>
+    <div id="thermo" style="width: 200px; height: 400px;"></div>
+
+    <script>
+        var myguage=new gauge({"container":"guage", "steps":10, "hasHand2":true});
+        var dialValue=0;
+        var fireValue=0;
+
+        //fire guage
+        var myFireGuage=new gauge({"container":"fire", "steps":4, "hasHand2":false, Labels:['Moderate','High','Extreme','Catastrophic'], Colours:['#00FF00','#FFFF00','#FF9900','#FF0000'], midPoint:true});
+
+      
+        function addToDial(){
+            dialValue=dialValue+0.5;
+            if (dialValue>10)
+                dialValue=0;
+
+            myguage.setDialValue(dialValue);
+        }
+        function setFire(){
+            fireValue++;
+            if (fireValue==4){
+                fireValue=0;
+            }
+            myFireGuage.setDialValue(fireValue);
+            
+        }
+
+        setInterval(() => {
+            addToDial();
+        }, 2000);
+
+
+
+        var myrose=new windrose({container:"rose"});
+        myrose.setDialValue("E");
+
+
+        var mythermo=new thermometer({container:"thermo","minvalue":11, "maxvalue":40 , "value":22.5, 'fill':'red', "showMinorScale":true, "showEveryScale": true, "addMaxMinMarkers": true});
+
+        //mythermo.setValue(20);
+
+        setTimeout( ()=>
+        {
+            mythermo.setMinValue(12);
+            mythermo.setMaxValue(33);
+            mythermo.setValue(25);
+        }
+        ,2000);
+
+        setTimeout( ()=>
+        {
+            mythermo.setMinValue(20);
+            mythermo.setMaxValue(30);
+            mythermo.setValue(35);
+        }
+        ,5000);
+
+        setInterval( ()=>
+        {
+            setFire()
+        }
+        ,5000);
+        
+
+    </script>
+</body>
+</html>
