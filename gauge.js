@@ -8,7 +8,18 @@ class utils {
 
         newSVGElement.setAttribute('width', width);
         newSVGElement.setAttribute('height', height);
-        newSVGElement.setAttribute('viewbox', '0 0 '+width+ ' '+height);
+        newSVGElement.setAttribute('viewBox', '0 0 '+width+ ' '+height);
+
+        parentElement.appendChild(newSVGElement);
+
+        return newSVGElement;
+    }
+    static _createSVGElementSet(parentElement, width, height, viewBoxWidth, viewBoxHeight){
+        var newSVGElement=document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+        newSVGElement.setAttribute('width', width);
+        newSVGElement.setAttribute('height', height);
+        newSVGElement.setAttribute('viewBox', '0 0 '+viewBoxWidth+ ' '+viewBoxHeight);
 
         parentElement.appendChild(newSVGElement);
 
@@ -537,4 +548,175 @@ class gauge{
             this.dial2Container2.style="transform-origin: "+this.OPointX + "px " + this.OPointY + "px; transform: rotate(" + (value*this.interval)+"deg); transition: transform 2s;"    
         }
     }
+}
+
+class tide{
+    container;
+    dialsvg;
+    width;
+    height;
+    midpoint;
+
+    onePercent;
+
+    hand;
+
+    hours=["Low","1","2","3","4","3","2","1","High","1","2","3","4","3","2","1",];
+    degstep=360/this.hours.length;
+    handposition;
+
+    constructor({container}){
+        this.container=document.getElementById(container);
+        this.width=parseInt(this.container.style.width);
+        this.height=parseInt(this.container.style.height);
+
+        this.dialsvg=utils._createSVGElementSet(this.container, this.width, this.height, 100, 100);
+
+        this.width=100;
+        this.height=100;
+
+        
+        var svgdefs=utils._createElement(this.dialsvg, "defs");
+        
+        var radialGradient=utils._createElement(svgdefs, "radialGradient");
+        radialGradient.setAttribute("id", "facecolour");
+        var radialGradientStop1=utils._createElement(radialGradient, "stop");
+        radialGradientStop1.setAttribute("offset", "0%");
+        radialGradientStop1.setAttribute("stop-color", "rgb(180,180,180)");
+        
+        var radialGradientStop2=utils._createElement(radialGradient, "stop");
+        radialGradientStop2.setAttribute("offset", "40%");
+        radialGradientStop2.setAttribute("stop-color", "rgb(235,235,235)");
+
+
+        var radialGradientHand=utils._createElement(svgdefs, "radialGradient");
+        radialGradientHand.setAttribute("id", "radialGradientHand");
+        var radialGradientHandStop1=utils._createElement(radialGradientHand, "stop");
+        radialGradientHandStop1.setAttribute("offset", "0%");
+        radialGradientHandStop1.setAttribute("stop-color", "Black");
+        
+        var radialGradientStop2=utils._createElement(radialGradientHand, "stop");
+        radialGradientStop2.setAttribute("offset", "100%");
+        radialGradientStop2.setAttribute("stop-color", "White");
+
+
+        var linearGradient=utils._createElement(svgdefs, "linearGradient");
+        linearGradient.setAttribute("id", "handgradient");
+        var linearGradientStop1=utils._createElement(linearGradient, "stop");
+        linearGradientStop1.setAttribute("offset", "0%");
+        linearGradientStop1.setAttribute("stop-color", "rgb(100,100,100)");
+        
+        var linearGradientStop2=utils._createElement(linearGradient, "stop");
+        linearGradientStop2.setAttribute("offset", "50%");
+        linearGradientStop2.setAttribute("stop-color", "white");
+
+        var linearGradientStop3=utils._createElement(linearGradient, "stop");
+        linearGradientStop3.setAttribute("offset", "100%");
+        linearGradientStop3.setAttribute("stop-color", "rgb(100,100,100)");
+
+
+        var background=utils._createElement(this.dialsvg, "circle");
+        var transstroke="rgba(0,0,0,0)";
+        var stroke="rgb(160,160,160)";
+
+        var fill="url('#facecolour')";
+        var fillhand="url('#handgradient')";
+        var fillhandcircle="url('#radialGradientHand')"
+   
+        background.setAttribute("stroke", stroke);
+        background.setAttribute("fill", fill);
+       
+        background.setAttribute("cx", 50);
+        background.setAttribute("cy", 50);
+        background.setAttribute("r", 49);
+
+       
+        //var hours=[1,2,3,4];
+        
+        var titlesradius=40;
+        for (var i=0; i<this.hours.length;i++){
+            var textElement = utils._createElement(this.dialsvg, "text");
+            textElement.setAttribute("dominant-baseline", "middle");
+            textElement.setAttribute("text-anchor", "middle");
+            textElement.setAttribute("font-size", "8px");
+            textElement.setAttribute("x", 50+(titlesradius*Math.sin(utils.degreeToRad(i*this.degstep))));
+            textElement.setAttribute("y", 50+(-titlesradius*Math.cos(utils.degreeToRad(i*this.degstep))));
+
+
+            textElement.textContent=this.hours[i];
+        }
+
+
+        var handCircle=utils._createElement(this.dialsvg, "circle");
+        handCircle.setAttribute("cx", 50);
+        handCircle.setAttribute("cy", 50);
+        handCircle.setAttribute("r", 5);
+        handCircle.setAttribute("fill", fillhandcircle);
+        handCircle.setAttribute("stroke", transstroke);
+
+        this.hand=utils._createElement(this.dialsvg, "path");
+        var handBody="";
+
+        handBody="M 48 60"
+        handBody+="L 48 19";
+        handBody+="L 44 19";
+        handBody+="L 50 10";
+
+        handBody+="L 56 19";
+        handBody+="L 52 19";
+        handBody+="L 52 60";
+
+        this.hand.setAttribute("fill", fillhand);
+        this.hand.setAttribute("stroke", stroke);
+        this.hand.setAttribute("d", handBody);
+    }
+
+    setValue(tidetype, numberofhours){  //- is hours to go, + hours ago
+
+
+        //calculate position
+
+        //low +2 to go= 330ish
+        //low -2 ago = 45ish
+
+        //high +2 to go = 160
+        //high -2 ago = 200
+
+        var deg=0;
+
+        if (tidetype=="low"){
+            if (numberofhours<0)
+                deg=(numberofhours * this.degstep)+360;
+            else
+                deg=(numberofhours * this.degstep);
+        }else{
+            deg=180+(numberofhours * this.degstep)
+        }
+
+
+        
+
+        //returns degs
+
+        //var deg = numberofhours;
+
+
+        //work out if we're going to cycle through the origin
+        if (this.handposition>270 && deg<90){
+            var tempDeg=deg+360;
+            this.hand.style="transform-origin: 50px 50px; transform: rotate(" + tempDeg+"deg); transition: transform 1s"; 
+
+
+            setTimeout(()=>{
+                this.hand.style="transform-origin: 50px 50px; transform: rotate(" + deg+"deg); transition: transform 0s;" 
+            },1000);
+        }else{
+            this.hand.style="transform-origin: 50px 50px; transform: rotate(" + deg+"deg); transition: transform 1s;" 
+        }
+
+
+        this.handposition=deg;
+
+    }
+
 }

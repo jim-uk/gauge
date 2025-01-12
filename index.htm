@@ -8,19 +8,26 @@
     <script src ="/gauge.js"></script>
 </head>
 <body>
-    <div id="guage" style="width: 300px; height: 150px;"></div>
+    <div id="gauge" style="width: 300px; height: 150px;"></div>
+    <div id="tide" style="width: 200px; height: 200px;"></div>
     <div id="fire" style="width: 300px; height: 150px;"></div>
     <div id="rose" style="width: 400px; height: 400px;"></div>
     <div id="thermo" style="width: 200px; height: 400px;"></div>
 
+
     <script>
-        var myguage=new gauge({"container":"guage", "steps":10, "hasHand2":true});
+        var myguage=new gauge({"container":"gauge", "steps":10, "hasHand2":true});
         var dialValue=0;
         var fireValue=0;
 
         //fire guage
         var myFireGuage=new gauge({"container":"fire", "steps":4, "hasHand2":false, Labels:['Moderate','High','Extreme','Catastrophic'], Colours:['#00FF00','#FFFF00','#FF9900','#FF0000'], midPoint:true});
 
+        var index=0;
+        var hours=[0,1,2,3,-3,-2,-1,0,1,2,3,-3,-2,-1];
+        var type=["low","low","low","low","high","high","high","high","high","high","high","low","low","low"];
+        
+        var myTideGauge=new tide({"container":"tide"});
       
         function addToDial(){
             dialValue=dialValue+0.5;
@@ -73,6 +80,16 @@
             setFire()
         }
         ,5000);
+
+        setInterval( ()=>
+        {
+            index++;
+            if (index==hours.length){
+                index=0;
+            }
+            myTideGauge.setValue(type[index],hours[index]);
+        }
+        ,3000);
         
 
     </script>
