@@ -13,10 +13,13 @@
     <div id="fire" style="width: 300px; height: 150px;"></div>
     <div id="rose" style="width: 400px; height: 400px;"></div>
     <div id="thermo" style="width: 200px; height: 400px;"></div>
+    <div id="moon" style="width: 400px; height: 400px;"></div>
+    <input type="number" min=0 max="29" onchange="setMoon()" id="moonday">
 
 
     <script>
-        var myguage=new gauge({"container":"gauge", "steps":10, "hasHand2":true});
+        var myguage=new gauge({"container":"gauge", "steps":12, Labels:['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'], midPoint:true,"hasHand2":true});
+        myguage.setDialValue(0);
         var dialValue=0;
         var fireValue=0;
 
@@ -29,13 +32,7 @@
         
         var myTideGauge=new tide({"container":"tide"});
       
-        function addToDial(){
-            dialValue=dialValue+0.5;
-            if (dialValue>10)
-                dialValue=0;
 
-            myguage.setDialValue(dialValue);
-        }
         function setFire(){
             fireValue++;
             if (fireValue==4){
@@ -46,7 +43,11 @@
         }
 
         setInterval(() => {
-            addToDial();
+            dialValue++;
+            if (dialValue>12)
+                dialValue=0;
+
+            myguage.setDialValue(dialValue);
         }, 2000);
 
 
@@ -56,6 +57,18 @@
 
 
         var mythermo=new thermometer({container:"thermo","minvalue":11, "maxvalue":40 , "value":22.5, 'fill':'red', "showMinorScale":true, "showEveryScale": true, "addMaxMinMarkers": true});
+
+
+        var mymoon=new moon({container: 'moon'});
+        mymoon.setMoonDay(23);
+
+
+        function setMoon(){
+            var moonvalue=document.getElementById("moonday").value;
+            mymoon.setMoonDay(parseInt(moonvalue));
+
+        }
+
 
         //mythermo.setValue(20);
 
