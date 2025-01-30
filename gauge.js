@@ -535,21 +535,21 @@ class gauge{
 
 
             var theta=i*this.interval;
-            var x1=this.OPointX-(hyp * Math.cos(utils.degreeToRad(theta+this.interval)));
-            var y1=this.OPointY-(hyp * Math.sin(utils.degreeToRad(theta+this.interval)));
-            var x2=this.OPointX-(hyp * Math.cos(utils.degreeToRad(theta)));
-            var y2=this.OPointY-(hyp * Math.sin(utils.degreeToRad(theta)));
+            var x1=this.OPointX-(hyp * Math.cos(utils.degreeToRad(theta)));
+            var y1=this.OPointY-(hyp * Math.sin(utils.degreeToRad(theta)));
+            var x2=this.OPointX-(hyp * Math.cos(utils.degreeToRad(theta+this.interval)));
+            var y2=this.OPointY-(hyp * Math.sin(utils.degreeToRad(theta+this.interval)));
 
-            var x1_label=this.OPointX-((hyp-10) * Math.cos(utils.degreeToRad(theta+this.interval)));
-            var y1_label=this.OPointY-((hyp-10) * Math.sin(utils.degreeToRad(theta+this.interval)));
-            var x2_label=this.OPointX-((hyp-10) * Math.cos(utils.degreeToRad(theta)));
-            var y2_label=this.OPointY-((hyp-10) * Math.sin(utils.degreeToRad(theta)));
+            var x1_label=this.OPointX-((hyp-20) * Math.cos(utils.degreeToRad(theta)));
+            var y1_label=this.OPointY-((hyp-20) * Math.sin(utils.degreeToRad(theta)));
+            var x2_label=this.OPointX-((hyp-20) * Math.cos(utils.degreeToRad(theta+this.interval)));
+            var y2_label=this.OPointY-((hyp-20) * Math.sin(utils.degreeToRad(theta+this.interval)));
 
 
             draw="";
             draw+="M " + this.OPointX + " " + this.OPointY + " ";
             draw+="L " + x1 + " "  + y1 + " ";
-            draw+="A "+ hyp + " " +hyp + " 0 0 0 " + x2 + " " + y2 + " ";
+            draw+="A "+ hyp + " " +hyp + " 0 0 1 " + x2 + " " + y2 + " ";
             draw+="L " + this.OPointX + " " + this.OPointY + " "; 
 
             var background=utils._createElement(this.dialsvg, "path");
@@ -560,7 +560,7 @@ class gauge{
             if (this.LabelsDefined){
                 var labelPath="";
                 labelPath+="M " + x1_label + " " + y1_label + " ";
-                labelPath+="A "+ (hyp-10) + " " +(hyp-10) + " 0 0 0 " + x2_label + " " + y2_label + " ";
+                labelPath+="A "+ (hyp-10) + " " +(hyp-10) + " 0 0 1 " + x2_label + " " + y2_label + " ";
     
                 var pathName=Labels[i].replace(" ","")+"_path";
 
@@ -784,7 +784,7 @@ class tide{
 
         var deg=0;
 
-        if (tidetypetoLowerCase()=="low"){
+        if (tidetype.toLowerCase()=="low"){
             if (numberofhours<0)
                 deg=(numberofhours * this.degstep)+360;
             else
